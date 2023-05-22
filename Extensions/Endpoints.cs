@@ -12,7 +12,9 @@ public static class Endpoints
         var devboards = app.MapGroup("/devboards");
 
         // GET devboards
-        _ = devboards.MapGet("/", async (ValkDbContext ctx) => await ctx.DevBoards.Select(_ => _.AsDTO()).ToListAsync());
+        _ = devboards.MapGet("/", async (ValkDbContext ctx) => await ctx.DevBoards.Select(_ => _.AsDTO()).ToListAsync())
+                     .WithName("GetDevboards")
+                     .WithOpenApi();
 
         // GET devboard/guid
         _ = devboards.MapGet("/{guid}", async (Guid guid, ValkDbContext ctx) =>
@@ -29,8 +31,6 @@ public static class Endpoints
 
             if (existingBoard is null)
                 return Results.NotFound();
-
-            var c = context.Entry(existingBoard).State;
 
 
             var updatedBoard = existingBoard with
