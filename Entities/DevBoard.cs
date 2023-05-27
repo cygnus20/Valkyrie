@@ -9,7 +9,7 @@ public record DevBoard
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
-    public Guid Guid { get; set; } = Guid.NewGuid();
+    public Guid Guid { get; init; } = Guid.Empty;
     public string Name { get; init; } = "";
     public string Description { get; init; } = "";
     public string Platform { get; init; } = "";

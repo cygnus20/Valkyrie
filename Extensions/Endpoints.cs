@@ -60,6 +60,7 @@ public static class Endpoints
         {
             var newBoard = new DevBoard
             {
+                Guid = Guid.NewGuid(),
                 Name = devboard.Name,
                 Description = devboard.Description,
                 Platform = devboard.Platform,
