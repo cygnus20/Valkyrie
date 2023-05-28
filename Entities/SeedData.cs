@@ -52,23 +52,15 @@ public static class SeedData
                 {
                     UART = new List<UART>
                     {
-                        new UART
-                        {
-                            RX = "D0",
-                            TX = "D1"
-                        }
+                        new UART { RX = "D0", TX = "D1" }
                     },
-                    I2C = new I2C
+                    I2C = new List<I2C>
                     {
-                        SDA = "D18",
-                        SCL = "D19"
+                        new I2C { SDA = "D18", SCL = "D19" }
                     },
-                    SPI = new SPI
+                    SPI = new List<SPI>
                     {
-                        SS = "D10",
-                        COPI = "D11",
-                        CIPO = "D12",
-                        SCK = "D13"
+                        new SPI { SS = "D10", COPI = "D11", CIPO = "D12", SCK = "D13" }
                     }
                 },
                 Dimensions = new Dimensions
