@@ -4,8 +4,8 @@ namespace Valkyrie.Entities;
 
 public record SPI
 {
-    public string SS { get; init; } = "";
-    public string COPI { get; init; } = "";
-    public string CIPO { get; init; } = "";
-    public string SCK { get; init; } = "";
+    public string SS { get; init; } = string.Empty;
+    public string COPI { get; init; } = string.Empty;
+    public string CIPO { get; init; } = string.Empty;
+    public string SCK { get; init; } = string.Empty;
 }

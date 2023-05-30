@@ -10,13 +10,18 @@ public class ValkDbContext : DbContext
         : base(options) { }
 
     public DbSet<DevBoard> DevBoards { get; set; }
+    public DbSet<SBC> SBC { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
         _ = modelBuilder.Entity<DevBoard>()
-                    .HasIndex(_ => _.Guid)
-                    .IsUnique();
+                        .HasIndex(_ => _.Guid)
+                        .IsUnique();
+
+        _ = modelBuilder.Entity<SBC>()
+                        .HasIndex(_ => _.Guid)
+                        .IsUnique();
 
         
     }

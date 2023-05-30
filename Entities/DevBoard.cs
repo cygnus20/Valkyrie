@@ -10,10 +10,10 @@ public record DevBoard
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
     public Guid Guid { get; init; } = Guid.Empty;
-    public string Name { get; init; } = "";
-    public string Description { get; init; } = "";
-    public string Platform { get; init; } = "";
-    public string Family { get; init; } = "";
+    public string Name { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
+    public string Platform { get; init; } = string.Empty;
+    public string Family { get; init; } = string.Empty;
     [Column(TypeName = "jsonb")]
     public MCU MainMCU { get; init; } = new MCU();
     [Column(TypeName = "jsonb")]

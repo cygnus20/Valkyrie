@@ -2,9 +2,9 @@
 
 public record JTAG
 {
-    public string TDI { get; init; } = "";
-    public string TDO { get; init; } = "";
-    public string TCK { get; init; } = "";
-    public string TMS { get; init; } = "";
+    public string TDI { get; init; } = string.Empty;
+    public string TDO { get; init; } = string.Empty;
+    public string TCK { get; init; } = string.Empty;
+    public string TMS { get; init; } = string.Empty;
     public string? TRST { get; init; }
 }

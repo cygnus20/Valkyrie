@@ -6,6 +6,6 @@ namespace Valkyrie.Entities;
 [Keyless]
 public record I2C
 {
-    public string SDA { get; init; } = "";
-    public string SCL { get; init; } = "";
+    public string SDA { get; init; } = string.Empty;
+    public string SCL { get; init; } = string.Empty;
 }

@@ -4,10 +4,10 @@ namespace Valkyrie.DTOs;
 
 public record InputDevboardDTO
 {
-    public string Name { get; init; } = "";
-    public string Description { get; init; } = "";
-    public string Platform { get; init; } = "";
-    public string Family { get; init; } = "";
+    public string Name { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
+    public string Platform { get; init; } = string.Empty;
+    public string Family { get; init; } = string.Empty;
     public MCU MainMCU { get; init; } = null!;
     public Pins Pins { get; init; } = null!;
     public Communications Communications { get; init; } = null!;

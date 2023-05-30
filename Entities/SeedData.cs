@@ -27,11 +27,11 @@ public static class SeedData
                     Architecture = "AVR",
                     Family = "ATmega",
                     Frequency = 8000000,
-                    Memories = new Dictionary<string, int>
+                    Memories = new List<Memory>
                     {
-                        ["SRAM"] = 2000,
-                        ["FLASH"] = 32000,
-                        ["EEPROM"] = 1000
+                        new Memory { Type = "SRAM", Size = 2000 },
+                        new Memory { Type = "FLASH", Size = 3200 },
+                        new Memory { Type = "EEPROM", Size = 1000 }
                     }
                 },
                 Pins = new Pins
@@ -72,6 +72,16 @@ public static class SeedData
             });
 
             db?.SaveChanges();
+        }
+
+        if (!db!.SBC.Any())
+        {
+            db?.SBC.AddRange(
+                new SBC
+                {
+
+                }
+                );
         }
 
     }
