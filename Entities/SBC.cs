@@ -13,7 +13,7 @@ public record SBC
     public string Description { get; init; } = string.Empty;
     public string Platform { get; init; } = string.Empty;
     [Column(TypeName = "jsonb")]
-    public List<string> OperatingSystem { get; init; } = Enumerable.Empty<string>().ToList();
+    public List<string> OperatingSystems { get; init; } = Enumerable.Empty<string>().ToList();
     [Column(TypeName = "jsonb")]
     public List<string> Sensors { get; init; } = Enumerable.Empty<String>().ToList();
     [Column(TypeName = "jsonb")]
@@ -21,8 +21,8 @@ public record SBC
     [Column(TypeName = "jsonb")]
     public Power Power { get; init; } = new();
     [Column(TypeName = "jsonb")]
-    public List<Pins> Pins { get; init; } = new();
-    [Column(TypeName = "jsosb")]
+    public Pins Pins { get; init; } = new();
+    [Column(TypeName = "jsonb")]
     public Communications Communications { get; set; } = new();
     [Column(TypeName = "jsonb")]
     public List<string> IO { get; init; } = Enumerable.Empty<string>().ToList();

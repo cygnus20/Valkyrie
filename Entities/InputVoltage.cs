@@ -2,6 +2,6 @@
 
 public record InputVoltage
 {
-    public int Min { get; init; }
-    public int Max { get; init; }
+    public float Min { get; init; }
+    public float Max { get; init; }
 }
