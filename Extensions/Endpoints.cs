@@ -2,6 +2,7 @@
 using Valkyrie.Entities;
 using Valkyrie.DTOs;
 using System.Runtime.InteropServices;
+using System.Collections.Immutable;
 
 namespace Valkyrie.Extensions;
 
@@ -95,6 +96,95 @@ public static class Endpoints
         });
 
 
+    }
+
+    public static void MapSBCsEndpoints(this WebApplication app)
+    {
+        var sbcs = app.MapGroup("sbcs");
+
+        // GET sbcs
+        _ = sbcs.MapGet("/", async (ValkDbContext ctx) => await ctx.SBC.Select(_ => _.AsDTO()).ToListAsync())
+                .WithName("GetSBCs")
+                .WithOpenApi();
+
+        // GET sbcs/guid
+        _ = sbcs.MapGet("/{guid}", async (Guid guid, ValkDbContext ctx) =>
+        {
+            var sbc = await ctx.SBC.FirstOrDefaultAsync(_ => _.Guid == guid);
+            return sbc is not null ? Results.Ok(sbc.AsDTO()) : Results.NotFound();
+        });
+
+        // PUT sbcs/guid
+        _ = sbcs.MapPut("/{guid}", async (Guid guid, InputSBCDTO sbc, ValkDbContext ctx) =>
+        {
+            var existingSBC = await ctx.SBC.AsNoTracking().FirstOrDefaultAsync(_ => _.Guid == guid);
+
+            if (existingSBC is null)
+                return Results.NotFound();
+
+            var updatedSBC = existingSBC with
+            {
+                Name = sbc.Name,
+                Description = sbc.Description,
+                Platform = sbc.Platform,
+                OperatingSystems = sbc.OperatingSystems,
+                Sensors = sbc.Sensors,
+                ExtraInterfaces = sbc.ExtraInterfaces,
+                Power = sbc.Power,
+                Pins = sbc.Pins,
+                Communications = sbc.Communications,
+                IO = sbc.IO,
+                NetworkingAndComm = sbc.NetworkingAndComm,
+                SpecialFeatures = sbc.SpecialFeatures
+
+            };
+
+            ctx.Update(updatedSBC);
+            await ctx.SaveChangesAsync();
+
+            return Results.NoContent();
+        });
+
+        // POST sbcs/guid
+        _ = sbcs.MapPost("/", async (InputSBCDTO sbc, ValkDbContext ctx) =>
+        {
+            var newSBC = new SBC
+            {
+                Guid = Guid.NewGuid(),
+                Name = sbc.Name,
+                Description = sbc.Description,
+                Platform = sbc.Platform,
+                OperatingSystems = sbc.OperatingSystems,
+                Sensors = sbc.Sensors,
+                ExtraInterfaces = sbc.ExtraInterfaces,
+                Power = sbc.Power,
+                Pins = sbc.Pins,
+                Communications = sbc.Communications,
+                IO = sbc.IO,
+                NetworkingAndComm = sbc.NetworkingAndComm,
+                SpecialFeatures = sbc.SpecialFeatures
+            };
+
+            ctx.Add(newSBC);
+            await ctx.SaveChangesAsync();
+
+            return Results.Created($"sbcs/{newSBC.Guid}", newSBC);
+        });
+
+        // DELETE sbcs/guid
+        _ = sbcs.MapDelete("/{guid}", async (Guid guid, ValkDbContext ctx) =>
+        {
+
+            if (await ctx.SBC.FirstOrDefaultAsync(_ => _.Guid == guid) is SBC sbc)
+            {
+                ctx.Remove(sbc);
+                await ctx.SaveChangesAsync();
+
+                return Results.NoContent();
+            }
+
+            return Results.NotFound();
+        });
     }
 
 

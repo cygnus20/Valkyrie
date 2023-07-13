@@ -20,4 +20,21 @@ public static class Utilities
         JTAG = devboard.JTAG
 
     };
+
+    public static SBCDTO AsDTO(this SBC sbc) => new SBCDTO
+    {
+        Guid = sbc.Guid,
+        Name = sbc.Name,
+        Description = sbc.Description,
+        Platform = sbc.Platform,
+        OperatingSystems = sbc.OperatingSystems,
+        Sensors = sbc.Sensors,
+        ExtraInterfaces = sbc.ExtraInterfaces,
+        Power = sbc.Power,
+        Pins = sbc.Pins,
+        Communications = sbc.Communications,
+        IO = sbc.IO,
+        NetworkingAndComm = sbc.NetworkingAndComm,
+        SpecialFeatures = sbc.SpecialFeatures
+    };
 }

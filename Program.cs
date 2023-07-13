@@ -28,5 +28,6 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("/", () => "Hello world");
 app.MapDevboardsEndpoints();
+app.MapSBCsEndpoints();
 
 app.Run();

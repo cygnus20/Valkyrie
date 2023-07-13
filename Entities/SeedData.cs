@@ -12,6 +12,7 @@ public static class SeedData
             db?.DevBoards.AddRange(
             new DevBoard
             {
+                Guid = Guid.NewGuid(),
                 Name = "Arduino Uno R3",
                 Description = "Arduino UNO is a microcontroller board based on the ATmega328P. " +
                                "It has 14 digital input/output pins (of which 6 can be used as PWM outputs), 6 analog inputs, a 16 MHz ceramic resonator, a USB connection, " +
@@ -79,6 +80,7 @@ public static class SeedData
             db?.SBC.AddRange(
                 new SBC
                 {
+                    Guid = Guid.NewGuid(),
                     Name = "Raspberry PI 4 Model B",
                     Description = "Your tiny, dual-display, desktop computer and robot brains, smart home hub, media centre, networked AI core, factory controller, and much more",
                     Platform = "Raspberry PI",
@@ -135,6 +137,8 @@ public static class SeedData
                     },
                 }
                 );
+
+            db?.SaveChanges();
         }
 
     }
