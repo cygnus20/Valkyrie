@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Text;
 
 namespace Valkyrie.Entities;
 
-public class ValkDbContext : DbContext
+public class ValkDbContext : IdentityDbContext<IdentityUser>
 {
     public ValkDbContext(DbContextOptions<ValkDbContext> options)
         : base(options) { }
@@ -14,6 +16,7 @@ public class ValkDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
 
         _ = modelBuilder.Entity<DevBoard>()
                         .HasIndex(_ => _.Guid)

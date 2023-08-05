@@ -3,6 +3,9 @@ using Valkyrie.Entities;
 using Valkyrie.DTOs;
 using System.Runtime.InteropServices;
 using System.Collections.Immutable;
+using Valkyrie.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace Valkyrie.Extensions;
 
@@ -10,12 +13,43 @@ public static class Endpoints
 {
     public static void MapDevboardsEndpoints(this WebApplication app)
     {
-        var devboards = app.MapGroup("/devboards");
+        var devboards = app.MapGroup("devboards").RequireAuthorization();
 
         // GET devboards
-        _ = devboards.MapGet("/", async (ValkDbContext ctx) => await ctx.DevBoards.Select(_ => _.AsDTO()).ToListAsync())
-                     .WithName("GetDevboards")
-                     .WithOpenApi();
+        _ = devboards.MapGet("/", async (QueryModel query, ValkDbContext ctx) =>
+        {
+            var devs = ctx.DevBoards.AsQueryable();
+            List<DevboardDTO>? pageDevboards = null;
+
+            if (query.FilterByPlat is not null)
+            {
+                pageDevboards = await Task.FromResult(devs.Where(d => d.Platform.ToLower() == query.FilterByPlat.ToLower()).Select(d => d.AsDTO()).ToList());
+            }
+
+            switch (query.SortBy)
+            {
+                case "name":
+                    if (query.SortDirection == "desc")
+                        pageDevboards = await Task.FromResult(pageDevboards?.OrderByDescending(d => d.Name).ToList() ??
+                                                                                                  devs.OrderByDescending(d => d.Name).Select(d => d.AsDTO()).ToList());
+                    else if (query.SortDirection == "asc" || query.SortDirection == "" || query.SortDirection!.Any())
+                        pageDevboards = await Task.FromResult(pageDevboards?.OrderBy(d => d.Name).ToList() ?? devs.OrderBy(d => d.Name).Select(d => d.AsDTO()).ToList());
+                    break;
+                case "platform":
+                    if (query.SortDirection == "desc")
+                        pageDevboards = await Task.FromResult(pageDevboards?.OrderByDescending(d => d.Platform).ToList() ?? 
+                                                        devs.OrderByDescending(d => d.Platform).Select(d => d.AsDTO()).ToList());
+                    else if (query.SortDirection == "asc" || query.SortDirection == "" || query.SortDirection!.Any())
+                        pageDevboards = await Task.FromResult(pageDevboards?.OrderBy(d => d.Platform).ToList() ??
+                                                devs.OrderBy(d => d.Platform).Select(d => d.AsDTO()).ToList());
+                   break;
+                default:
+                    if (query.FilterByPlat is null)
+                        pageDevboards = await Task.FromResult(devs.Select(d => d.AsDTO()).ToList());
+                    break;
+            }
+            return pageDevboards ?? Enumerable.Empty<DevboardDTO>();
+    }).AllowAnonymous();
 
         // GET devboard/guid
         _ = devboards.MapGet("/{guid}", async (Guid guid, ValkDbContext ctx) =>
@@ -105,7 +139,8 @@ public static class Endpoints
         // GET sbcs
         _ = sbcs.MapGet("/", async (ValkDbContext ctx) => await ctx.SBC.Select(_ => _.AsDTO()).ToListAsync())
                 .WithName("GetSBCs")
-                .WithOpenApi();
+                .WithOpenApi()
+                .RequireAuthorization();
 
         // GET sbcs/guid
         _ = sbcs.MapGet("/{guid}", async (Guid guid, ValkDbContext ctx) =>
