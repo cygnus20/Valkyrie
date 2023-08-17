@@ -5,7 +5,7 @@ namespace Valkyrie.Extensions;
 
 public static class Utilities
 {
-    public static DevboardDTO AsDTO(this DevBoard devboard) => new DevboardDTO
+    public static DevboardDTO AsDTO(this DevBoard devboard) => new()
     {
         Guid = devboard.Guid,
         Name = devboard.Name,
@@ -21,7 +21,7 @@ public static class Utilities
 
     };
 
-    public static SBCDTO AsDTO(this SBC sbc) => new SBCDTO
+    public static SBCDTO AsDTO(this SBC sbc) => new()
     {
         Guid = sbc.Guid,
         Name = sbc.Name,
