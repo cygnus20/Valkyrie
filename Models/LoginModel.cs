@@ -8,7 +8,7 @@ public class LoginModel
     public string? Username { get; set; }
     public string? Password { get; set; }
 
-    public static ValueTask<LoginModel?> BindAsync(HttpContext context, ParameterInfo parameter)
+    /*public static ValueTask<LoginModel?> BindAsync(HttpContext context, ParameterInfo parameter)
     {
         LoginModel result;
 
@@ -23,8 +23,5 @@ public class LoginModel
 
         return ValueTask.FromResult<LoginModel?>(result);
 
-
-
-
-    }
+    }*/
 }

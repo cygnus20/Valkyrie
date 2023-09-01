@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using Valkyrie.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using Microsoft.OpenApi.Models;
 
 namespace Valkyrie.Extensions;
 
@@ -15,7 +16,7 @@ public static class Endpoints
     {
         var devboards = app.MapGroup("devboards").RequireAuthorization();
 
-        // GET devboards
+        // GET /devboards
         _ = devboards.MapGet("/", async (QueryModel query, ValkDbContext ctx) =>
         {
             var devs = ctx.DevBoards.AsQueryable();
@@ -49,7 +50,50 @@ public static class Endpoints
                     break;
             }
             return pageDevboards ?? Enumerable.Empty<DevboardDTO>();
-    }).AllowAnonymous();
+    })
+            .WithOpenApi(operation => new(operation)
+            {
+                Summary = "Get devboards",
+                Description = "Get lists of development boards. Returns ten boards by default.",
+                Parameters = new List<OpenApiParameter>()
+                {
+                    new OpenApiParameter
+                    {
+                        Name = "filter",
+                        Description = "Platform of devboards to display",
+                        In = ParameterLocation.Query,
+                        Required = false,
+                        Schema = new OpenApiSchema { Type = "string" }
+                    },
+                    new OpenApiParameter
+                    {
+                        Name = "sortBy",
+                        Description = "Property which the boards are sort by",
+                        In = ParameterLocation.Query,
+                        Required = false,
+                        Schema = new OpenApiSchema { Type = "string" }
+                    },
+                    new OpenApiParameter
+                    {
+                        Name = "sortDir",
+                        Description = "Direction of sort, either asc for ascending and desc for descending. The default is asc.",
+                        In = ParameterLocation.Query,
+                        Required = false,
+                        Schema = new OpenApiSchema { Type = "string" }
+                    },
+                    new OpenApiParameter
+                    {
+                        Name = "page",
+                        Description = "Page number of boards",
+                        In = ParameterLocation.Query,
+                        Required = false,
+                        Schema = new OpenApiSchema { Type = "int" }
+                    }
+                }
+            })
+            .Produces<DevboardDTO>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status200OK)
+            .AllowAnonymous();
 
         // GET devboard/guid
         _ = devboards.MapGet("/{guid}", async (Guid guid, ValkDbContext ctx) =>
@@ -57,7 +101,23 @@ public static class Endpoints
             var devboard = await ctx.DevBoards.FirstOrDefaultAsync(_ => _.Guid == guid);
 
             return devboard is not null ? Results.Ok(devboard.AsDTO()) : Results.NotFound();
-        });
+        })
+            .WithOpenApi(operation => new(operation)
+            {
+                Summary = "Get a single develoment board by guid",
+                Parameters = new List<OpenApiParameter>
+                {
+                    new OpenApiParameter
+                    {
+                        Name = "guid",
+                        Description = "Universally Unique Identifier of the development board",
+                        In = ParameterLocation.Path,
+                        Schema = new OpenApiSchema { Type = "uuid" }
+                    }
+                }
+            })
+            .Produces(StatusCodes.Status200OK)
+            .AllowAnonymous();
 
         // PUT devboards/guid
         _ = devboards.MapPut("/{guid}", async (Guid guid, InputDevboardDTO devboard, ValkDbContext context) =>

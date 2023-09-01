@@ -9,19 +9,31 @@ using Valkyrie.Validators;
 using Valkyrie.Models;
 using Valkyrie.Filters;
 using Valkyrie;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddValidatorsFromAssemblyContaining(typeof(LoginValidator));
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserValidator>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.ExpireTimeSpan = TimeSpan.FromMicroseconds(30);
         options.SlidingExpiration = true;
+        options.Cookie.HttpOnly = true;
     });
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Dev Boards and Single Board Computer API",
+        Description = "An API for presenting the specifications and features of microcontroller development boards and single board computers",
+    });
+});
 
 var postgresDbSettings = builder.Configuration.GetSection(nameof(PostgresDbSettings)).Get<PostgresDbSettings>();
 var connectionString = postgresDbSettings?.ConnectionString;
@@ -47,20 +59,11 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler(exceptionHandlerApp => exceptionHandlerApp.ConfigureExceptionHandler());
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseHttpsRedirection();
 
 
 app.MapGet("/", () => "Hello world");
-app.MapPost("/login", async (LoginModel loginModel) =>
-{
-    var userManager = app.Services.GetRequiredService<UserManager<IdentityUser>>();
-    var username = loginModel.Username;
-    var password = loginModel.Password;
-
-    if (await userManager.FindByNameAsync(username!) != null)
-    {
-
-    }
-}).AddEndpointFilter<ValidationFilter<LoginModel>>();
+app.MapAccountsEndpoints();
 app.MapDevboardsEndpoints();
 app.MapSBCsEndpoints();
 
