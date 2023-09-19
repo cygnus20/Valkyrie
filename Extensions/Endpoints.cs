@@ -117,6 +117,7 @@ public static class Endpoints
                 }
             })
             .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
             .AllowAnonymous();
 
         // PUT devboards/guid
@@ -148,7 +149,23 @@ public static class Endpoints
             await context.SaveChangesAsync();
 
             return Results.NoContent();
-        });
+        })
+            .WithOpenApi(operation => new(operation)
+            {
+                Summary = "Modify a development board of the specified guid",
+                Parameters = new List<OpenApiParameter>
+                {
+                    new OpenApiParameter
+                    {
+                        Name = "guid",
+                        Description = "Universally Unique Identifier of the development board",
+                        In = ParameterLocation.Path,
+                        Schema = new OpenApiSchema { Type = "uuid" }
+                    }
+                }
+            })
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status204NoContent);
 
         // POST deveboards
         _ = devboards.MapPost("/", async (InputDevboardDTO devboard, ValkDbContext context) =>
@@ -174,7 +191,12 @@ public static class Endpoints
             await context.SaveChangesAsync();
 
             return Results.Created($"/devboards/{newBoard.Guid}", newBoard);
-        });
+        })
+            .WithOpenApi(operation => new(operation)
+            {
+                Summary = "Create new development board"
+            })
+            .Produces(StatusCodes.Status201Created);
 
         // DELETE devboards/guid
         _ = devboards.MapDelete("/{guid}", async(Guid guid, ValkDbContext ctx) =>
@@ -187,20 +209,36 @@ public static class Endpoints
             }
 
             return Results.NotFound();
-        });
+        })
+            .WithOpenApi(operation => new(operation)
+            {
+                Summary = "Delete the development board of the specified guid",
+                Parameters = new List<OpenApiParameter>
+                {
+                    new OpenApiParameter
+                    {
+                        Name = "guid",
+                        Description = "Universally Unique Identifier of the development board",
+                        In = ParameterLocation.Path,
+                        Schema = new OpenApiSchema { Type = "uuid" }
+                    }
+                }
+            })
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status404NotFound);
 
 
     }
 
     public static void MapSBCsEndpoints(this WebApplication app)
     {
-        var sbcs = app.MapGroup("sbcs");
+        var sbcs = app.MapGroup("sbcs").RequireAuthorization();
 
         // GET sbcs
         _ = sbcs.MapGet("/", async (ValkDbContext ctx) => await ctx.SBC.Select(_ => _.AsDTO()).ToListAsync())
                 .WithName("GetSBCs")
                 .WithOpenApi()
-                .RequireAuthorization();
+                .AllowAnonymous();
 
         // GET sbcs/guid
         _ = sbcs.MapGet("/{guid}", async (Guid guid, ValkDbContext ctx) =>

@@ -23,6 +23,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true;
         options.Cookie.HttpOnly = true;
     });
+builder.Services.AddCors();
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -49,6 +50,11 @@ await DbInitializer.Initialize(app);
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors(cfg =>
+    {
+        cfg.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+    });
+
     SeedData.AddDevboards(app);
 
     app.UseSwagger();
@@ -62,7 +68,6 @@ app.UseAuthorization();
 app.UseHttpsRedirection();
 
 
-app.MapGet("/", () => "Hello world");
 app.MapAccountsEndpoints();
 app.MapDevboardsEndpoints();
 app.MapSBCsEndpoints();
