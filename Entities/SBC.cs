@@ -3,15 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Valkyrie.Entities;
 
-public record SBC
+public record SBC :Board
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
-    public Guid Guid { get; init; } = Guid.Empty;
-    public string Name { get; init; } = string.Empty;
-    public string Description { get; init; } = string.Empty;
-    public string Platform { get; init; } = string.Empty;
     [Column(TypeName = "jsonb")]
     public List<string> OperatingSystems { get; init; } = Enumerable.Empty<string>().ToList();
     [Column(TypeName = "jsonb")]

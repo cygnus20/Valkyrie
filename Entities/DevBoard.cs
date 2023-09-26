@@ -4,15 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Valkyrie.Entities;
 
-public record DevBoard
+public record DevBoard : Board
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
-    public Guid Guid { get; init; } = Guid.Empty;
-    public string Name { get; init; } = string.Empty;
-    public string Description { get; init; } = string.Empty;
-    public string Platform { get; init; } = string.Empty;
     public string Family { get; init; } = string.Empty;
     [Column(TypeName = "jsonb")]
     public MCU MainMCU { get; init; } = new MCU();
